@@ -1,0 +1,36 @@
+{
+  "name": "totally-basic-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tmpl.js",
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "tmpl.js",
+    "tmpl.min.js"
+  ],
+  "scripts": {
+    "minify": "terser tmpl.js -o tmpl.min.js",
+    "bundlesize": "npm run minify && bundlesize --config bundlesize.json",
+    "server": "http-server -p 1965",
+    "test": "node-qunit-puppeteer http://localhost:1965/test/test.html 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewp/totally-basic-template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matthewp/totally-basic-template/issues"
+  },
+  "homepage": "https://github.com/matthewp/totally-basic-template#readme",
+  "devDependencies": {
+    "bundlesize": "^0.18.0",
+    "http-server": "^0.11.1",
+    "node-qunit-puppeteer": "^1.0.13",
+    "terser": "^4.3.8"
+  }
+}
