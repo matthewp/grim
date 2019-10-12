@@ -43,13 +43,8 @@ let Template = {
 
     walk(frag, (node, index) => {
       if(this.parts.has(index)) {
-        for(let [type, prop, args] of this.parts.get(index)) {
-          parts.push(Object.create(type, {
-            node: valueEnumerable(node),
-            prop: valueEnumerable(prop),
-            value: valueEnumerableWritable(null),
-            args: valueEnumerable(args)
-          }));
+        for(let [Part, prop, args] of this.parts.get(index)) {
+          parts.push(new Part(node, prop, null, args));
         }
       }
     });
@@ -63,7 +58,14 @@ let Template = {
   }
 };
 
-let Part = {
+class Part {
+  constructor(node, prop, value, args) {
+    this.node = node;
+    this.prop = prop;
+    this.value = value;
+    this.args = args;
+  }
+
   update(value, data) {
     if(value !== this.value) {
       this.value = value;
@@ -72,44 +74,45 @@ let Part = {
     }
     return false;
   }
-};
+}
 
 let textExp = /{{(.+?)}}/g;
-let TextPart = Object.create(Part, {
-  set: valueEnumerable(function(value) {
+
+class TextPart extends Part {
+  set(value) {
     this.node.data = value;
-  })
-});
+  }
+}
 
-let AttributePart = Object.create(Part, {
-  set: valueEnumerable(function(value) {
+class AttributePart extends Part {
+  set(value) {
     this.node.setAttribute(this.args.name, value);
-  })
-});
+  }
+}
 
-let BooleanAttributePart = Object.create(AttributePart, {
-  set: valueEnumerable(function(value) {
+class BooleanAttributePart extends Part {
+  set(value) {
     if(value) {
       this.node.setAttribute(this.args.name, '');
     } else if(this.node.hasAttribute(this.args.name)) {
       this.node.removeAttribute(this.args.name);
     }
-  })
-});
+  }
+}
 
-let PropertyPart = Object.create(Part, {
-  set: valueEnumerable(function(value) {
+class PropertyPart extends Part {
+  set(value) {
     this.node[this.args.prop] = value;
-  })
-});
+  }
+}
 
-let EventPart = Object.create(Part, {
-  set: valueEnumerable(function(value) {
+class EventPart extends Part {
+  set(value) {
     this.node.addEventListener(this.args.event, value);
-  })
-});
+  }
+}
 
-let DirectivePart = {
+class DirectivePart extends Part {
   update(fn, data) {
     if(!('updater' in this)) {
       this.updater = fn(this.node, data) || noop;
@@ -120,12 +123,12 @@ let DirectivePart = {
 }
 
 let specials = new Map([
-  ['if', Object.create(Part, {
-    update: valueEnumerable(function(value, data) {
-      Part.update.call(this, value, data);
+  ['if', class extends Part {
+    update(value, data) {
+      super.update(value, data);
       this.frag.update(data);
-    }),
-    set: valueEnumerable(function(value, data) {
+    }
+    set(value, data) {
       if(!this.nodes) {
         let template = stamp(this.node);
         this.frag = template.createInstance(data);
@@ -145,15 +148,15 @@ let specials = new Map([
         }
         this.nodes[0].replaceWith(this.placeholder);
       }
-    })
-  })],
-  ['each', Object.create(Part, {
-    update: valueEnumerable(function(values, parentData) {
-      if(!Part.update.call(this, values, parentData)) {
+    }
+  }],
+  ['each', class extends Part {
+    update(values, parentData) {
+      if(!super.update(values, parentData)) {
         this.updateValues(values, parentData);
       }
-    }),
-    set: valueEnumerable(function(values, parentData) {
+    }
+    set(values, parentData) {
       if(!this.start) {
         this.start = document.createComment(`each(${this.prop})`);
         this.end = document.createComment(`end each(${this.prop})`);
@@ -162,8 +165,8 @@ let specials = new Map([
         this.frags = new Map();
       }
       this.updateValues(values, parentData);
-    }),
-    render: valueEnumerable(function(value, parentData) {
+    }
+    render(value, parentData) {
       let template = stamp(this.node);
       let data = Object.create(parentData, {
         item: { value }
@@ -172,11 +175,11 @@ let specials = new Map([
       frag.nodes = Array.from(frag.childNodes);
       this.frags.set(value, [frag, data]);
       return frag;
-    }),
-    key: valueEnumerable(function(value) {
+    }
+    key(value) {
       return value;
-    }),
-    updateValues: valueEnumerable(function(values, parentData) {
+    }
+    updateValues(values, parentData) {
       if(this.args.key) {
 
       } else {
@@ -196,8 +199,8 @@ let specials = new Map([
           }
         }
       }
-    })
-  })]
+    }
+  }]
 ]);
 
 function addPart(parts, index, item) {
