@@ -1,5 +1,5 @@
 import { UpdatingElement } from 'lit-element/lib/updating-element.js';
-import { stamp } from 'grim';
+import { stamp } from 'grim2';
 
 function handleEvent(prop, ev) {
   if(!(prop in this)) {

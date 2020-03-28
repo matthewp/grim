@@ -22,6 +22,7 @@
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "grim2": "^1.0.0",
     "lit-element": "^2.2.1"
   },
   "devDependencies": {
