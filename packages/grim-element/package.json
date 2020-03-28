@@ -2,7 +2,7 @@
   "name": "grim-element",
   "version": "1.0.0",
   "description": "",
-  "main": "el.js",
+  "main": "grim-element.js",
   "directories": {
     "test": "test"
   },
@@ -14,5 +14,8 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "lit-element": "^2.2.1"
+  },
+  "devDependencies": {
+    "snowpack": "^1.6.0"
   }
 }

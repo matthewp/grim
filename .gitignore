@@ -1,2 +1,3 @@
 node_modules/
-tmpl.min.js
+web_modules/
+grim.min.js
