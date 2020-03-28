@@ -1,4 +1,5 @@
 node_modules/
 web_modules/
+_site/
 grim.min.js
 grim-element.min.js
