@@ -13,7 +13,7 @@
   "scripts": {
     "minify": "terser grim.js -o grim.min.js",
     "bundlesize": "npm run minify && bundlesize --config bundlesize.json",
-    "test": "node-qunit-puppeteer http://localhost:1965/test/test.html 10000"
+    "test": "node-qunit-puppeteer http://localhost:1965/packages/grim/test/test.html 10000"
   },
   "repository": {
     "type": "git",
