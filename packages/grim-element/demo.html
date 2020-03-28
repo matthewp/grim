@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>GrimElement</title>
+<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
+
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+<script>
+  QUnit.config.autostart = false;
+</script>
+<script defer src="https://unpkg.com/es-module-shims@0.4.4/dist/es-module-shims.js"></script>
+<script type="importmap-shim">
+{
+  "imports": {
+    "lit-html": "./node_modules/lit-html/lit-html.js",
+    "lit-element/": "./web_modules/lit-element/",
+    "grim": "../grim/grim.js",
+    "grim-element": "./grim-element.js"
+  }
+}
+</script>
+<script type="module-shim">
+  import { GrimElement } from "grim-element";
+
+  class MyApp extends GrimElement {
+    static template = document.querySelector('#main-template');
+
+    static properties = {
+      name: { type: String }
+    };
+
+    constructor() {
+      super();
+      this.name = 'world';
+    }
+
+    onInput(ev) {
+      this.name = ev.target.value;
+    }
+  }
+
+  customElements.define('my-app', MyApp);
+</script>
+
+<script type="module-shim">
+  import { GrimElement } from "grim-element";
+
+  class MyCounter extends GrimElement {
+    static template = document.querySelector('#counter-template');
+
+    static properties = {
+      count: { type: Number }
+    };
+
+    constructor() {
+      super();
+      this.count = 0;
+    }
+
+    increment() {
+      this.count++;
+    }
+  }
+
+  customElements.define('my-counter', MyCounter);
+</script>
+
+<script type="module-shim">
+  import { GrimElement } from "grim-element";
+
+  class MyTodos extends GrimElement {
+    static template = document.querySelector('#todos-template');
+
+    static properties = {
+      todos: { type: Array }
+    };
+
+    constructor() {
+      super();
+      this.todos = [];
+    }
+
+    addTodo(ev) {
+      this.todos.push(ev.target.value);
+      this.requestUpdate();
+      ev.target.value = '';
+    }
+  }
+
+  customElements.define('my-todos', MyTodos);
+</script>
+
+<my-app></my-app>
+<my-counter></my-counter>
+<my-todos></my-todos>
+<template id="main-template">
+  <form>
+    <input type="text" placeholder="name" @input="onInput">
+  </form>
+  <p>Hello <strong>{{name}}</strong></p>
+</template>
+<template id="counter-template">
+  <button @click="increment">Increment</button>
+  <p>Clicked <strong>{{count}}</strong> times</p>
+</template>
+<template id="todos-template">
+  <h2>Todos</h2>
+  <input type="text" placeholder="what to do?" @change="addTodo">
+
+  <ul>
+    <template $each="todos">
+      <li>{{item}}</li>
+    </template>
+  </ul>
+</template>

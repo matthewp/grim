@@ -1,0 +1,33 @@
+{
+  "name": "grim-element",
+  "version": "1.0.0",
+  "description": "Create custom elements using Grim for templating.",
+  "main": "grim-element.js",
+  "files": [
+    "grim-element.js",
+    "grim-element.min.js"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "minify": "terser grim-element.js -o grim-element.min.js",
+    "bundlesize": "npm run minify && bundlesize --config bundlesize.json",
+    "test": "node-qunit-puppeteer http://localhost:1965/packages/grim-element/test/test.html 10000"
+  },
+  "keywords": [
+    "templating",
+    "web components"
+  ],
+  "author": "Matthew Phillips <matthew@matthewphillips.info>",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "lit-element": "^2.2.1"
+  },
+  "devDependencies": {
+    "bundlesize": "^0.18.0",
+    "node-qunit-puppeteer": "^2.0.1",
+    "snowpack": "^1.6.0",
+    "terser": "^4.6.7"
+  }
+}

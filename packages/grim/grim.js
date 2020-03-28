@@ -108,6 +108,11 @@ class PropertyPart extends Part {
 
 class EventPart extends Part {
   set(value) {
+    if(this._bound) {
+      this.node.removeEventListener(this.args.event, this._bound);
+    }
+
+    this._bound = value;
     this.node.addEventListener(this.args.event, value);
   }
 }
@@ -179,7 +184,7 @@ let specials = new Map([
     key(value) {
       return value;
     }
-    updateValues(values, parentData) {
+    updateValues(values = [], parentData) {
       if(this.args.key) {
 
       } else {

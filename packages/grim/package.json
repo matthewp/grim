@@ -1,0 +1,34 @@
+{
+  "name": "grim2",
+  "version": "1.0.0",
+  "description": "Incredibly simple templating.",
+  "main": "grim.js",
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "grim.js",
+    "grim.min.js"
+  ],
+  "scripts": {
+    "minify": "terser grim.js -o grim.min.js",
+    "bundlesize": "npm run minify && bundlesize --config bundlesize.json",
+    "test": "node-qunit-puppeteer http://localhost:1965/packages/grim/test/test.html 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewp/grim.git"
+  },
+  "keywords": [],
+  "author": "Matthew Phillips <matthew@matthewphillips.info>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/matthewp/grim/issues"
+  },
+  "homepage": "https://github.com/matthewp/grim#readme",
+  "devDependencies": {
+    "bundlesize": "^0.18.0",
+    "node-qunit-puppeteer": "^1.0.13",
+    "terser": "^4.3.8"
+  }
+}

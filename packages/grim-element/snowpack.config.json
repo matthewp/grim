@@ -1,0 +1,5 @@
+{
+  "webDependencies": [
+    "lit-element/lib/updating-element.js"
+  ]
+}

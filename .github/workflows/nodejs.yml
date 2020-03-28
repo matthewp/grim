@@ -19,11 +19,22 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Puppeteer Container
       uses: ianwalter/puppeteer@v2.0.0
-    - name: npm install, build, and test
+    - name: npm install, npm run server
       run: |
-        yarn
+        npm ci
         npm run server &
-        npm run bundlesize
+    - name: Test Grim
+      run: |
+        cd packages/grim
+        npm ci
         npm test
+        npm run bundlesize
+    - name: Test GrimElement
+      run: |
+        cd packages/grim-element
+        npm ci
+        npx snowpack
+        npm test
+        npm run bundlesize
       env:
         CI: true
