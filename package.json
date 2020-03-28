@@ -1,0 +1,10 @@
+{
+  "name": "grim-monorepo",
+  "private": true,
+  "scripts": {
+    "server": "http-server -p 1965"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.1"
+  }
+}

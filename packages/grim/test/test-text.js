@@ -1,4 +1,4 @@
-import { stamp } from '../tmpl.js';
+import { stamp } from '../grim.js';
 import { createTemplate } from './helpers.js';
 
 QUnit.module('Inserting {{text}}', () => {
