@@ -18,3 +18,4 @@ __Table of Contents__
 * [Events](./syntax-event.html)
 * [Conditionals](./syntax-conditional.html)
 * [Lists](./syntax-list.html)
+* [Directives](./syntax-directive.html)

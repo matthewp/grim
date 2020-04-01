@@ -8,20 +8,20 @@ permalink: syntax-property.html
 Properties are setting using attributes that start with a dot `.`. This is meant to mirror setting properties in JavaScript: `person.name = 'Reaper';`.
 
 ```html
-<template id="person">
-  <input type="number" .valueAsNumber="{{age}}">
+<template id="progress">
+  <progress .value="value" max="100">
 </template>
 
 <script type="module">
   import { stamp } from '/web_modules/grim2.js';
 
-  let template = stamp(document.querySelector('#person'));
+  let template = stamp(document.querySelector('#progress'));
   let frag = template.createInstance({
-    age: 13
+    value: 20
   });
 
-  let input = frag.querySelector('input');
-  console.log(input.value); // "13"
+  let progress = frag.querySelector('progress');
+  assert.equal(progress.value, 20);
 </script>
 ```
 
