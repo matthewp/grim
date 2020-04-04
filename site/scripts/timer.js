@@ -1,4 +1,4 @@
-import { stamp } from './grim.js';
+import { stamp } from 'https://unpkg.com/grim2@1.0.0/grim.js';
 import { createMachine, interpret, immediate, invoke, reduce, state, transition } from 'https://unpkg.com/robot3@0.2.15/machine.js';
 
 const templateEl = document.querySelector('#timer');
