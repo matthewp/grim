@@ -8,16 +8,14 @@ title: Grim
 <title>{{ title }}</title>
 <link rel="stylesheet" href="{{ '/styles/main.css' | relUrl(page.url) }}">
 <link rel="stylesheet" href="{{ '/styles/theme.css' | relUrl(page.url) }}">
-
-{%- for ss in stylesheets -%}
-<link rel="stylesheet" href="{{ ss | relUrl(page.url) }}">
-{%- endfor -%}
+<link rel="stylesheet" href="{{ '/styles/home.css' | relUrl(page.url) }}">
 <link rel="apple-touch-icon" sizes="180x180" href="{{ '/images/apple-touch-icon.png' | relUrl(page.url) }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ '/images/favicon-32x32.png' | relUrl(page.url) }}">
 <link rel="icon" type="image/png" sizes="16x16" href="{{ '/images/favicon-16x16.png' | relUrl(page.url) }}">
 <link rel="manifest" href="{{ '/images/site.webmanifest' | relUrl(page.url) }}">
+<script type="module" src="{{ '/scripts/live-example.js' | relUrl(page.url) }}"></script>
 
-<body{% if id %} id="{{ id }}"{% endif %} class="home">
+<body id="home" class="home">
 
 <header class="content container">
   <hgroup>
@@ -63,3 +61,10 @@ title: Grim
     <p>Made with 👻 by <a href="https://twitter.com/matthewcp">@matthewcp</a></p>
   </div>
 </footer>
+
+{% include 'live-example.njk' %}
+{% raw %}
+<template id="timer">
+  Seconds: <strong>{{seconds}}</strong>
+</template>
+{% endraw %}

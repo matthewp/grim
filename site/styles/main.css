@@ -25,6 +25,25 @@ body > header {
   text-align: center;
 }
 
+body:not(#home) > header > hgroup {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+body:not(#home) > header > hgroup > :first-child {
+  justify-self: flex-end;
+}
+
+body:not(#home) > header > hgroup > :last-child {
+  justify-self: flex-start;
+}
+
+body:not(#home) > header > hgroup svg {
+  width: 100px;
+}
+
 #reaper-logo {
   position: relative;
   width: 250px;

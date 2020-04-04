@@ -1,0 +1,75 @@
+<template id="le-tmpl">
+  <style>
+    .root {
+      display: grid;
+      --border-radius: 6px;
+    }
+
+
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      padding: 0 .6rem;
+    }
+
+    .code header {
+      background: #141412;
+      border-top-left-radius: var(--border-radius);
+    }
+
+    .example {
+      border-left: 3px solid #321291;
+      border-right: 3px solid #321291;
+      border-bottom: 3px solid #321291;
+      border-top-right-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+    }
+
+    .example header {
+      background: #321291;
+    }
+
+    .insert {
+      padding: .6rem;
+    }
+
+    ::slotted(pre) {
+      height: 382px;
+      overflow: scroll;
+      margin: 0;
+      border-top-right-radius: 0 !important;
+      border-top-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    @media only screen and (min-width: 768px) {
+      .root {
+        grid-template-columns: repeat(7, 1fr);
+      }
+
+      .code {
+        grid-column: 1 / 6;
+      }
+
+      .example {
+        grid-column: 6 / 8;
+        border-left: none;
+      }
+    }
+  </style>
+  <div class="root">
+    <section class="code">
+      <header>
+        <h1>Code</h1>
+      </header>
+      <slot></slot>
+    </section>
+    <section class="example">
+      <header>
+        <h1>Result</h1>
+      </header>
+      <div class="insert"></div>
+    </section>
+  </div>
+</template>

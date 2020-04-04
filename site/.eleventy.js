@@ -6,6 +6,7 @@ const markdownItTocAndAnchor = require('markdown-it-toc-and-anchor').default;
 module.exports = function(eleventyConfig) {
   eleventyConfig.setTemplateFormats([ 'md', 'njk' ]);
   eleventyConfig.addPassthroughCopy('site/styles');
+  eleventyConfig.addPassthroughCopy('site/scripts');
   eleventyConfig.addPassthroughCopy('site/images');
 
   eleventyConfig.addPlugin(pluginSyntaxHighlight);
