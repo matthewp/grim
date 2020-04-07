@@ -2,18 +2,14 @@ function valueEnumerable(value) {
   return { enumerable: true, value };
 }
 
-function valueEnumerableWritable(value) {
-  return { enumerable: true, writable: true, value };
-}
-
 let noop = () => {};
 
 function delve(obj, key, def, p, undef) {
-	key = key.split ? key.split('.') : key;
-	for (p = 0; p < key.length; p++) {
-		obj = obj ? obj[key[p]] : undef;
-	}
-	return obj === undef ? def : obj;
+  key = key.split ? key.split('.') : key;
+  for (p = 0; p < key.length; p++) {
+    obj = obj ? obj[key[p]] : undef;
+  }
+  return obj === undef ? def : obj;
 }
 
 function updateFragment(data = {}) {
@@ -38,7 +34,7 @@ function walk(root, cb) {
 
 let Template = {
   createInstance(data) {
-    let frag = document.importNode(this.template.content, true);    
+    let frag = document.importNode(this.template.content, true);
     let parts = [];
 
     walk(frag, (node, index) => {
@@ -167,18 +163,23 @@ let specials = new Map([
         this.end = document.createComment(`end each(${this.prop})`);
         this.node.replaceWith(this.start);
         this.start.after(this.end);
-        this.frags = new Map();
+        //this.frags = new Map();
+        this.frags = [];
       }
       this.updateValues(values, parentData);
     }
-    render(value, parentData) {
-      let template = stamp(this.node);
-      let data = Object.create(parentData, {
+    createData(value, parentData) {
+      return Object.create(parentData, {
         item: { value }
       });
+    }
+    render(value, parentData) {
+      let template = stamp(this.node);
+      let data = this.createData(value, parentData);
       let frag = template.createInstance(data);
       frag.nodes = Array.from(frag.childNodes);
-      this.frags.set(value, [frag, data]);
+      frag.data = data;
+      //this.frags.set(value, [frag, data]);
       return frag;
     }
     key(value) {
@@ -188,21 +189,42 @@ let specials = new Map([
       if(this.args.key) {
 
       } else {
+        let index = 0;
+        let frags = this.frags;
+        let frag;
         let last;
         for(let value of values) {
-          let key = this.key(value);
-          if(this.frags.has(key)) {
-            let [frag, data] = this.frags.get(key);
-            last = frag;
-            frag.update(data);
-          } else {
-            let sibling = last ? last.nodes[last.nodes.length - 1] : this.start;
-            let frag = this.render(value, parentData);
-            sibling.after(frag);
+          frag = frags[index];
 
-            if(!last) last = frag;
+          if(frag === undefined) {
+            let sibling = last ? last.nodes[last.nodes.length - 1] : this.start;
+            frag = this.render(value, parentData);
+            frags.push(frag);
+            sibling.after(frag);
+          } else {
+            frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
           }
+
+          last = frag;
+          index++;
         }
+
+        if(index < frags.length) {
+          frags.length = index;
+          this.clear(frag && frag.nodes[frag.nodes.length - 1].nextSibling);
+        }
+      }
+    }
+
+    clear(startNode = this.start.nextSibling) {
+      let node = startNode;
+      let end = this.end;
+      let parent = end.parentNode;
+      let next;
+      while(node !== end) {
+        next = node.nextSibling;
+        parent.removeChild(node);
+        node = next;
       }
     }
   }]
@@ -212,7 +234,7 @@ function addPart(parts, index, item) {
   if(!parts.has(index)) {
     parts.set(index, []);
   } else {
-    
+
   }
   let items = parts.get(index);
   items.push(item);
