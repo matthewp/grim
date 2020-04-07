@@ -43,5 +43,29 @@ QUnit.module('<template $each=cond>', () => {
 
     one = frag.firstElementChild.firstElementChild;
     assert.equal(one, null, 'There is no element child now');
-  })
+  });
+
+  QUnit.test('Keyed lists reuse the correct node', assert => {
+    let raw = createTemplate(`
+      <ul>
+        <template $each="colors" data-key="id"><li><input type="text" .value="item.label"></li></template>
+      </ul>
+    `);
+    let template = stamp(raw);
+    let frag = template.createInstance({
+      colors: [{ id: 1, label: 'orange' }]
+    });
+    let one = frag.firstElementChild.firstElementChild.firstElementChild;
+    one.value = 'testing';
+
+    frag.update({
+      colors: [{ id: 2, label: 'red' }, { id: 1, label: 'orange' }]
+    });
+
+    one = frag.firstElementChild.firstElementChild.firstElementChild;
+    assert.equal(one.value, 'red');
+
+    let two = frag.firstElementChild.firstElementChild.nextElementSibling.firstElementChild;
+    assert.equal(two.value, 'testing');
+  });
 });

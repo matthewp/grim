@@ -70,6 +70,10 @@ class Part {
     }
     return false;
   }
+
+  static args() {
+    return {};
+  }
 }
 
 let textExp = /{{(.+?)}}/g;
@@ -152,6 +156,13 @@ let specials = new Map([
     }
   }],
   ['each', class extends Part {
+    static args(node) {
+      return { key: node.dataset.key };
+    }
+    constructor(...args) {
+      super(...args);
+      this.updateValues = this.args.key ? this.updateValuesKeyed : this.updateValuesNonKeyed;
+    }
     update(values, parentData) {
       if(!super.update(values, parentData)) {
         this.updateValues(values, parentData);
@@ -163,8 +174,8 @@ let specials = new Map([
         this.end = document.createComment(`end each(${this.prop})`);
         this.node.replaceWith(this.start);
         this.start.after(this.end);
-        //this.frags = new Map();
         this.frags = [];
+        this.keys = new Map();
       }
       this.updateValues(values, parentData);
     }
@@ -179,43 +190,62 @@ let specials = new Map([
       let frag = template.createInstance(data);
       frag.nodes = Array.from(frag.childNodes);
       frag.data = data;
-      //this.frags.set(value, [frag, data]);
       return frag;
     }
     key(value) {
       return value;
     }
-    updateValues(values = [], parentData) {
-      if(this.args.key) {
+    append(frag, ref) {
+      let sibling = ref ? ref.nodes[ref.nodes.length - 1] : this.start;
+      sibling.after(frag);
+    }
+    * runUpdates(values) {
+      let index = 0;
+      let frags = this.frags;
+      let frag;
+      for(let value of values) {
+        frag = frags[index];
 
-      } else {
-        let index = 0;
-        let frags = this.frags;
-        let frag;
-        let last;
-        for(let value of values) {
-          frag = frags[index];
+        yield [value, index, frag];
+        index++;
+      }
 
-          if(frag === undefined) {
-            let sibling = last ? last.nodes[last.nodes.length - 1] : this.start;
-            frag = this.render(value, parentData);
-            frags.push(frag);
-            sibling.after(frag);
-          } else {
-            frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
-          }
-
-          last = frag;
-          index++;
-        }
-
-        if(index < frags.length) {
-          frags.length = index;
-          this.clear(frag && frag.nodes[frag.nodes.length - 1].nextSibling);
-        }
+      if(index < frags.length) {
+        frags.length = index;
+        this.clear(frag && frag.nodes[frag.nodes.length - 1].nextSibling);
       }
     }
+    updateValuesKeyed(values = [], parentData) {
+      let key = this.args.key;
+      let last;
+      for(let [value, index, frag] of this.runUpdates(values)) {
+        let keyValue = value[key];
+        let keyedFrag = this.keys.get(keyValue);
 
+        if(!keyedFrag || keyedFrag !== frag) {
+          keyedFrag = this.render(value, parentData);
+          this.append(keyedFrag, last);
+          this.frags.splice(index, 0, keyedFrag);
+          this.keys.set(keyValue, keyedFrag);
+        } else {
+          frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
+        }
+        last = frag;
+      }
+    }
+    updateValuesNonKeyed(values = [], parentData) {
+      let last;
+      for(let [value,, frag] of this.runUpdates(values)) {
+        if(frag === undefined) {
+          frag = this.render(value, parentData);
+          this.append(frag, last);
+          this.frags.push(frag);
+        } else {
+          frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
+        }
+        last = frag;
+      }
+    }
     clear(startNode = this.start.nextSibling) {
       let node = startNode;
       let end = this.end;
@@ -267,7 +297,8 @@ function process(template) {
               case '$':
                 let directive = name.substr(1);
                 if(specials.has(directive)) {
-                  addPart(parts, index, [specials.get(directive), value, {}]);
+                  let Part = specials.get(directive);
+                  addPart(parts, index, [Part, value, Part.args(currentNode)]);
                 } else {
                   addPart(parts, index, [DirectivePart, directive]);
                 }
