@@ -3,6 +3,7 @@ layout: home.njk
 title: Grim - Simple HTML Templating in 2kB
 shortTitle: Home
 tags: page
+date: 2020-01-01
 ---
 
 __Grim__ takes the innovations in [lit-html](https://lit-html.polymer-project.org/) and brings them to HTML. Fast, small, and simple to understand, Grim is the templating choice for websites.

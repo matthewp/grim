@@ -1,0 +1,23 @@
+---
+title: Grim
+---
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<link rel="stylesheet" href="{{ '/styles/main.css' | relUrl(page.url) }}">
+<link rel="stylesheet" href="{{ '/styles/theme.css' | relUrl(page.url) }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ '/images/apple-touch-icon.png' | relUrl(page.url) }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ '/images/favicon-32x32.png' | relUrl(page.url) }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ '/images/favicon-16x16.png' | relUrl(page.url) }}">
+<link rel="manifest" href="{{ '/images/site.webmanifest' | relUrl(page.url) }}">
+<script type="module" src="{{ '/scripts/live-example.js' | relUrl(page.url) }}"></script>
+
+<body{% if id %} id="{{ id }}"{% endif %} class="home">
+
+{% include '_header.njk' %}
+{% include '_nav.njk' %}
+{% include '_main.njk' %}
+{% include '_footer.njk' %}
+{% include 'live-example.njk' %}

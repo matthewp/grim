@@ -1,0 +1,1 @@
+export * from 'https://unpkg.com/grim2@1.0.0/grim.js';

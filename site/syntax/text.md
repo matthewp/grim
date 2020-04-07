@@ -2,7 +2,7 @@
 layout: page.njk
 title: Text Binding
 tags: syntax
-permalink: syntax-text.html
+permalink: syntax/text.html
 ---
 
 Text is bound using the double curly notation that is common with many templating languages, {% raw %}`{{}}`{% endraw %}.

@@ -2,7 +2,7 @@
 layout: page.njk
 title: Property Binding
 tags: syntax
-permalink: syntax-property.html
+permalink: syntax/property.html
 ---
 
 Properties are setting using attributes that start with a dot `.`. This is meant to mirror setting properties in JavaScript: `person.name = 'Reaper';`.
