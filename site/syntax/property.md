@@ -23,7 +23,7 @@ Properties are setting using attributes that start with a dot `.`. This is meant
   });
 
   let progress = frag.querySelector('progress');
-  assert.equal(progress.value, 20);
+  console.log(progress.value); // 20
 </script>
 ```
 
