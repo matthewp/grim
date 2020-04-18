@@ -9,7 +9,7 @@ permalink: syntax/event.html
 
 Events are set using attributes that start with an `@` symbol. This is the same as binding to [events in lit-html](https://lit-html.polymer-project.org/guide/writing-templates#add-event-listeners).
 
-<live-example src="./clicks.js">
+<live-example src="./examples/clicks.js">
 
 {% raw %}
 ```html
@@ -23,7 +23,7 @@ Events are set using attributes that start with an `@` symbol. This is the same 
 </template>
 
 <script type="module">
-  import { stamp } from '/web_modules/grim2.js';
+  import { stamp } from 'https://www.pika.dev/cdn';
 
   let template = stamp(document.querySelector('#clicks'));
 

@@ -13,11 +13,11 @@ __Grim__ is a declarative templating library for JavaScript projects. See the [s
 
 ## Install
 
-The easiest way is to use a CDN such as [unpkg](https://unpkg.com) and import directly from your browser like so:
+The easiest way is to use a CDN such as [unpkg](https://unpkg.com) or [Pika CDN](https://www.pika.dev/cdn) and import directly from your browser like so:
 
 ```html
 <script type="module">
-  import { stamp } from 'https://unpkg.com/grim2@1.0.0/grim.js';
+  import { stamp } from 'https://cdn.pika.dev/grim2';
 </script>
 ```
 

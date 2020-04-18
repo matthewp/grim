@@ -6,7 +6,6 @@
     }
 
     .root {
-      display: grid;
       --border-radius: 6px;
     }
 
@@ -23,11 +22,9 @@
     }
 
     .example {
-      border-left: 3px solid #321291;
-      border-right: 3px solid #321291;
-      border-bottom: 3px solid #321291;
-      border-top-right-radius: var(--border-radius);
+      background: #1f1f1f;
       border-bottom-right-radius: var(--border-radius);
+      border-top-right-radius: var(--border-radius);
     }
 
     .example header {
@@ -49,6 +46,7 @@
 
     @media only screen and (min-width: 768px) {
       .root {
+        display: grid;
         grid-template-columns: repeat(7, 1fr);
       }
 
@@ -58,7 +56,6 @@
 
       .example {
         grid-column: 6 / 8;
-        border-left: none;
       }
     }
   </style>

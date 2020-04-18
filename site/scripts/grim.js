@@ -1,1 +1,1 @@
-export * from 'https://unpkg.com/grim2@1.0.0/grim.js';
+export * from 'https://cdn.pika.dev/grim2@1.1.0';

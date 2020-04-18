@@ -1,4 +1,4 @@
-import { stamp } from './grim.js';
+import { stamp } from '../grim.js';
 
 const templateEl = document.createElement('template');
 templateEl.innerHTML = /* html */ `

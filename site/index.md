@@ -26,7 +26,7 @@ __[Grim](./packages/grim.html)__ allows writing templates in HTML. Instances of 
 </template>
 
 <script type="module">
-  import { stamp } from '/web_modules/grim2.js';
+  import { stamp } from 'https://cdn.pika.dev/grim2';
 
   let template = stamp(document.querySelector('#hw'));
   
@@ -63,7 +63,7 @@ GrimElement is based on [LitElement](https://lit-element.polymer-project.org/) a
 </template>
 
 <script type="module">
-  import { GrimElement } from '/web_modules/grim-element.js';
+  import { GrimElement } from 'https://cdn.pika.dev/grim-element';
 
   class HelloWorld extends GrimElement {
     static template = document.querySelector('#hw');
@@ -93,7 +93,7 @@ These two factors means it works will with advanced state management solutions l
 
 Here's an example of using [Robot](https://thisrobot.life/) to manage a timer that is kept up to date with Grim:
 
-<live-example src="./timer.js">
+<live-example src="./examples/timer.js">
 
 {% raw %}
 ```js
@@ -102,7 +102,7 @@ Here's an example of using [Robot](https://thisrobot.life/) to manage a timer th
 </template>
 
 <script type="module">
-  import { stamp } from '/web_modules/grim2.js';
+  import { stamp } from 'https://cdn.pika.dev/grim2';
   import {
     createMachine,
     interpret,
@@ -111,7 +111,7 @@ Here's an example of using [Robot](https://thisrobot.life/) to manage a timer th
     reduce,
     state,
     transition
-  } from '/web_modules/robot3.js';
+  } from 'https://cdn.pika.dev/robot3';
 
   function waitASecond() {
     return new Promise(resolve => setTimeout(resolve, 1000));
