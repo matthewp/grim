@@ -27,7 +27,7 @@ With [npm](https://www.npmjs.com/) you can install the `grim2` package:
 npm install grim2 --save
 ```
 
-If using the npm workflow I suggest pairing it with [Snowpack] which allows you to work locally while still using browser modules.
+If using the npm workflow I suggest pairing it with [Snowpack](https://www.snowpack.dev/) which allows you to work locally while still using browser modules.
 
 ```bash
 npx snowpack
