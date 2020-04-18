@@ -4,12 +4,12 @@ function valueEnumerable(value) {
 
 let noop = () => {};
 
-function delve(obj, key, def, p, undef) {
-  key = key.split ? key.split('.') : key;
-  for (p = 0; p < key.length; p++) {
-    obj = obj ? obj[key[p]] : undef;
+function delve(obj, keys) {
+  let len = keys.length, val = obj, i = 0;
+  for(; i < len; i++) {
+    val = val[keys[i]];
   }
-  return obj === undef ? def : obj;
+  return val;
 }
 
 function updateFragment(data = {}) {
@@ -159,10 +159,6 @@ let specials = new Map([
     static args(node) {
       return { key: node.dataset.key };
     }
-    constructor(...args) {
-      super(...args);
-      this.updateValues = this.args.key ? this.updateValuesKeyed : this.updateValuesNonKeyed;
-    }
     update(values, parentData) {
       if(!super.update(values, parentData)) {
         this.updateValues(values, parentData);
@@ -170,12 +166,14 @@ let specials = new Map([
     }
     set(values, parentData) {
       if(!this.start) {
+        this.key = this.args.key ? this.keyKeyed : this.keyNonKeyed;
         this.start = document.createComment(`each(${this.prop})`);
         this.end = document.createComment(`end each(${this.prop})`);
         this.node.replaceWith(this.start);
         this.start.after(this.end);
         this.frags = [];
-        this.keys = new Map();
+        this.keys = [];
+        this.keyMap = new Map();
       }
       this.updateValues(values, parentData);
     }
@@ -192,70 +190,126 @@ let specials = new Map([
       frag.data = data;
       return frag;
     }
-    key(value) {
-      return value;
+    keyNonKeyed(_, index) {
+      return index;
+    }
+    keyKeyed(value) {
+      return value[this.args.key];
+    }
+    refrag(frag) {
+      if(!frag.firstChild && frag.nodes)
+        frag.append(...frag.nodes);
+      return frag;
     }
     append(frag, ref) {
       let sibling = ref ? ref.nodes[ref.nodes.length - 1] : this.start;
-      sibling.after(frag);
+      sibling.after(this.refrag(frag));
     }
-    * runUpdates(values) {
-      let index = 0;
-      let frags = this.frags;
-      let frag;
-      for(let value of values) {
-        frag = frags[index];
-
-        yield [value, index, frag];
-        index++;
-      }
-
-      if(index < frags.length) {
-        frags.length = index;
-        this.clear(frag && frag.nodes[frag.nodes.length - 1].nextSibling);
-      }
+    before(frag, ref) {
+      let sibling = ref ? ref.nodes[0] : this.end;
+      sibling.before(this.refrag(frag));
     }
-    updateValuesKeyed(values = [], parentData) {
-      let key = this.args.key;
-      let last;
-      for(let [value, index, frag] of this.runUpdates(values)) {
-        let keyValue = value[key];
-        let keyedFrag = this.keys.get(keyValue);
-
-        if(!keyedFrag || keyedFrag !== frag) {
-          keyedFrag = this.render(value, parentData);
-          this.append(keyedFrag, last);
-          this.frags.splice(index, 0, keyedFrag);
-          this.keys.set(keyValue, keyedFrag);
-        } else {
-          frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
-        }
-        last = frag;
-      }
+    remove(frag) {
+      this.clear(frag.nodes[0], frag.nodes[frag.nodes.length - 1].nextSibling);
     }
-    updateValuesNonKeyed(values = [], parentData) {
-      let last;
-      for(let [value,, frag] of this.runUpdates(values)) {
-        if(frag === undefined) {
-          frag = this.render(value, parentData);
-          this.append(frag, last);
-          this.frags.push(frag);
-        } else {
-          frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
-        }
-        last = frag;
-      }
-    }
-    clear(startNode = this.start.nextSibling) {
+    clear(startNode = this.start.nextSibling, end = this.end) {
       let node = startNode;
-      let end = this.end;
-      let parent = end.parentNode;
       let next;
       while(node !== end) {
         next = node.nextSibling;
-        parent.removeChild(node);
+        node.remove();
         node = next;
       }
+    }
+    updateFrag(frag, value, parentData) {
+      frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
+      return frag;
+    }
+    updateValues(values = [], parentData) {
+      let oldFrags = this.frags,
+      newFrags = [],
+      oldKeys = this.keys;
+
+      let expectedMap = new Map();
+      let newKeys = [];
+      for(let i = 0, len = values.length; i < len; i++) {
+        let key = this.key(values[i], i);
+        expectedMap.set(key, values[i]);
+        newKeys[i] = key;
+      }
+
+      let newHead = 0,
+        newTail = values.length - 1,
+        oldHead = 0,
+        oldTail = oldFrags.length - 1;
+      
+      while(oldHead <= oldTail && newHead <= newTail) {
+        if (oldFrags[oldHead] === null) {
+          oldHead++;
+        } else if (oldFrags[oldTail] === null) {
+          oldTail--;
+        } else if(oldKeys[oldHead] === newKeys[newHead]) {
+          newFrags[newHead] =
+            this.updateFrag(oldFrags[oldHead], values[newHead], parentData);
+          oldHead++;
+          newHead++;
+        } else if(oldKeys[oldTail] === newKeys[newTail]) {
+          newFrags[newTail] =
+            this.updateFrag(oldFrags[oldTail], values[newTail], parentData);
+          oldTail--;
+          newTail--;
+        } else if(oldKeys[oldHead] === newKeys[newTail]) {
+          newFrags[newTail] =
+            this.updateFrag(oldFrags[oldHead], values[newTail], parentData);
+          this.before(oldFrags[oldHead], newFrags[newTail + 1]);
+          oldHead++;
+          newTail--;
+        } else if(oldKeys[oldTail] === newKeys[newHead]) {
+          newFrags[newHead] =
+            this.updateFrag(oldFrags[oldTail], values[newHead], parentData);
+          this.before(oldFrags[oldTail], oldFrags[oldHead]);
+          oldTail--;
+          newHead++;
+        } else {
+          if(!expectedMap.has(oldKeys[oldHead])) {
+            this.remove(oldFrags[oldHead]);
+            oldHead++;
+          } else if(!expectedMap.has(oldKeys[oldTail])) {
+            this.remove(oldFrags[oldTail]);
+            oldTail--;
+          } else {
+            let value = values[newHead];
+            let frag = this.keyMap.get(this.key(value, newHead));
+            if(frag === undefined) {
+              frag = this.render(value, parentData);
+              this.keyMap.set(this.key(value, newHead), frag);
+            } else {
+              frag = this.updateFrag(frag, value, parentData);
+              oldFrags[oldFrags.indexOf(frag)] = null;
+            }
+            newFrags[newHead] = frag;
+            this.append(frag, oldFrags[newHead - 1]);
+            newHead++;
+          }
+        }
+      }
+
+      while(newHead <= newTail) {
+        let frag = this.render(values[newHead], parentData);
+        this.keyMap.set(this.key(frag.data.item, newHead), frag);
+        this.append(frag, newFrags[newHead - 1]);
+        newFrags[newHead++] = frag;
+      }
+
+      while(oldHead <= oldTail) {
+        let frag = oldFrags[oldHead];
+        this.keyMap.delete(this.key(frag.data.item, oldHead));
+        oldHead++;
+        this.remove(frag);
+      }
+
+      this.keys = newKeys;
+      this.frags = newFrags;
     }
   }]
 ]);
@@ -267,6 +321,7 @@ function addPart(parts, index, item) {
 
   }
   let items = parts.get(index);
+  item[1] = item[1].split('.');
   items.push(item);
 }
 

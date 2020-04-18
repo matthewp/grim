@@ -48,6 +48,26 @@ QUnit.module('<template $each=cond>', () => {
   });
 
   QUnit.module('Keyed', () => {
+    QUnit.test('Sorted in array order', assert => {
+      let raw = createTemplate(`
+        <ul>
+          <template $each="colors" data-key="id"><li>{{item.label}}</li></template>
+        </ul>
+      `);
+      let template = stamp(raw);
+      let frag = template.createInstance({
+        colors: [
+          { id: 1, label: 'red' },
+          { id: 2, label: 'yellow' },
+          { id: 3, label: 'blue' }
+        ]
+      });
+      let ul = frag.firstElementChild;
+      assert.equal(ul.firstElementChild.textContent, 'red');
+      assert.equal(ul.firstElementChild.nextElementSibling.textContent, 'yellow');
+      assert.equal(ul.firstElementChild.nextElementSibling.nextElementSibling.textContent, 'blue');
+    });
+
     QUnit.test('Reuse the correct node', assert => {
       let raw = createTemplate(`
         <ul>
@@ -80,34 +100,20 @@ QUnit.module('<template $each=cond>', () => {
       `);
       let template = stamp(raw);
       let frag = template.createInstance({
-        colors: [{ id: 1, label: 'blue' }]
-      });
-      let ul = frag.firstElementChild;
-
-      frag.update({
-        colors:[
-          { id: 2, label: 'red' },
-          { id: 1, label: 'blue' }
-        ]
-      });
-
-      assert.equal(ul.firstElementChild.textContent, 'red');
-      assert.equal(ul.firstElementChild.nextElementSibling.textContent, 'blue');
-
-      frag.update({
-        colors:[
+        colors: [
           { id: 2, label: 'red' },
           { id: 3, label: 'purple' },
           { id: 1, label: 'blue' }
         ]
       });
+      let ul = frag.firstElementChild;
 
       assert.equal(ul.firstElementChild.textContent, 'red');
       assert.equal(ul.firstElementChild.nextElementSibling.textContent, 'purple');
       assert.equal(ul.firstElementChild.nextElementSibling.nextElementSibling.textContent, 'blue');
 
       frag.update({
-        colors:[
+        colors: [
           { id: 1, label: 'blue' },
           { id: 2, label: 'red' }
         ]
