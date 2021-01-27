@@ -2,12 +2,14 @@
   "name": "grim-monorepo",
   "private": true,
   "scripts": {
-    "server": "http-server -p 1965"
+    "site": "eleventy --input=site --config=site/.eleventy.js",
+    "server": "lws -p 1965 --stack lws-static"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^0.10.0",
-    "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.1",
-    "http-server": "^0.12.1",
+    "@11ty/eleventy": "^0.11.1",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.6",
+    "local-web-server": "^4.2.1",
+    "lws-static": "^2.0.0",
     "markdown-it-toc-and-anchor": "^4.2.0"
   }
 }
