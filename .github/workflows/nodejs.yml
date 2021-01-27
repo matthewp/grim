@@ -33,7 +33,7 @@ jobs:
       run: |
         cd packages/grim-element
         npm ci
-        npx snowpack
+        node install.js
         npm test
         npm run bundlesize
       env:
