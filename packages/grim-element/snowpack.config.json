@@ -1,6 +1,0 @@
-{
-  "webDependencies": [
-    "grim2",
-    "lit-element/lib/updating-element.js"
-  ]
-}

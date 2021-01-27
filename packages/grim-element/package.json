@@ -22,13 +22,13 @@
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "grim2": "^1.0.0",
-    "lit-element": "^2.2.1"
+    "grim2": "^1.1.0",
+    "lit-element": "^2.4.0"
   },
   "devDependencies": {
-    "bundlesize": "^0.18.0",
-    "node-qunit-puppeteer": "^2.0.1",
-    "snowpack": "^1.6.0",
-    "terser": "^4.6.7"
+    "bundlesize": "^0.18.1",
+    "esinstall": "^1.0.3",
+    "node-qunit-puppeteer": "^2.0.3",
+    "terser": "^5.5.1"
   }
 }
