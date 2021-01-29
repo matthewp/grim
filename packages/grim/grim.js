@@ -13,11 +13,16 @@ function delve(obj, keys) {
 }
 
 function updateFragment(data = {}) {
+  let dirty = this.dirty;
   let parts = this.parts;
   parts.forEach(function updatePart(part) {
     let value = delve(data, part.prop);
-    part.update(value, data);
+    if(part.update(value, data)) dirty.push(part);
   });
+  dirty.forEach(function commitPart(part) {
+    part.commit();
+  });
+  this.dirty.length = 0;
 }
 
 function walk(root, cb) {
@@ -40,13 +45,14 @@ let Template = {
     walk(frag, (node, index) => {
       if(this.parts.has(index)) {
         for(let [Part, prop, args] of this.parts.get(index)) {
-          parts.push(new Part(node, prop, null, args));
+          parts.push(...Part.create(node, prop, null, args));
         }
       }
     });
 
     Object.defineProperties(frag, {
       parts: valueEnumerable(parts),
+      dirty: valueEnumerable([]),
       update: valueEnumerable(updateFragment)
     });
     frag.update(data);
@@ -71,12 +77,40 @@ class Part {
     return false;
   }
 
+  commit(){}
+
   static args() {
     return {};
+  }
+
+  static create(...args) {
+    return [new this(...args)];
   }
 }
 
 let textExp = /{{(.+?)}}/g;
+
+class MultiString {
+  constructor(statics) {
+    this.dirty = false;
+    this.statics = Array.from(statics);
+  }
+
+  set(index, value) {
+    this.dirty = true;
+    this.statics[index] = value;
+  }
+
+  commit() {
+    this.dirty = false;
+    return this.statics.join('');
+  }
+
+  static create(a, _, c, { ctr, name, names, statics }) {
+    const inst = new this(statics);
+    return names.map(([i, n]) => new ctr(a, n, c, { name, index: i, committer: inst }))
+  }
+}
 
 class TextPart extends Part {
   set(value) {
@@ -86,7 +120,11 @@ class TextPart extends Part {
 
 class AttributePart extends Part {
   set(value) {
-    this.node.setAttribute(this.args.name, value);
+    this.args.committer.set(this.args.index, value);
+  }
+  commit() {
+    if(this.args.committer.dirty)
+      this.node.setAttribute(this.args.name, this.args.committer.commit());
   }
 }
 
@@ -317,8 +355,6 @@ let specials = new Map([
 function addPart(parts, index, item) {
   if(!parts.has(index)) {
     parts.set(index, []);
-  } else {
-
   }
   let items = parts.get(index);
   item[1] = item[1].split('.');
@@ -340,7 +376,25 @@ function process(template) {
           let match = textExp.exec(value);
           let remove = true;
           if(match) {
-            addPart(parts, index, [AttributePart, match[1], { name }]);
+            let i = 0, stri = 0;
+            let statics = [];
+            let names = [];
+
+            do {
+              if(match.index > stri)
+                statics[i++] = value.substr(stri, match.index - stri);
+
+              names.push([i, match[1].split('.')]);
+              //addPart(parts, index, [AttributePart, match[1], { name, multi, index: i }]);
+
+              statics[i++] = '';
+              stri = match.index + match[0].length;
+
+              match = textExp.exec(value);
+            } while(match);
+            if(value.length > stri) statics[i] = value.substr(stri);
+
+            addPart(parts, index, [MultiString, '', { name, names, statics, ctr: AttributePart }]);
           } else {
             switch(name[0]) {
               case '@':
