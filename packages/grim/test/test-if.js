@@ -1,3 +1,4 @@
+import QUnit from './qunit.js';
 import { stamp } from '../grim.js';
 import { createTemplate } from './helpers.js';
 
