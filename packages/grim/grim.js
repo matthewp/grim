@@ -215,14 +215,15 @@ let specials = new Map([
       }
       this.updateValues(values, parentData);
     }
-    createData(value, parentData) {
+    createData(index, value, parentData) {
       return Object.create(parentData, {
+        index: { value: index },
         item: { value }
       });
     }
-    render(value, parentData) {
+    render(index, value, parentData) {
       let template = stamp(this.node);
-      let data = this.createData(value, parentData);
+      let data = this.createData(index, value, parentData);
       let frag = template.createInstance(data);
       frag.nodes = Array.from(frag.childNodes);
       frag.data = data;
@@ -319,7 +320,7 @@ let specials = new Map([
             let value = values[newHead];
             let frag = this.keyMap.get(this.key(value, newHead));
             if(frag === undefined) {
-              frag = this.render(value, parentData);
+              frag = this.render(newHead, value, parentData);
               this.keyMap.set(this.key(value, newHead), frag);
             } else {
               frag = this.updateFrag(frag, value, parentData);
@@ -333,7 +334,7 @@ let specials = new Map([
       }
 
       while(newHead <= newTail) {
-        let frag = this.render(values[newHead], parentData);
+        let frag = this.render(newHead, values[newHead], parentData);
         this.keyMap.set(this.key(frag.data.item, newHead), frag);
         this.append(frag, newFrags[newHead - 1]);
         newFrags[newHead++] = frag;
