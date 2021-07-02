@@ -260,8 +260,8 @@ let specials = new Map([
         node = next;
       }
     }
-    updateFrag(frag, value, parentData) {
-      frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(value, parentData));
+    updateFrag(frag, index, value, parentData) {
+      frag.update(frag.data.item === value ? frag.data : frag.data = this.createData(index, value, parentData));
       return frag;
     }
     updateValues(values = [], parentData) {
@@ -289,23 +289,23 @@ let specials = new Map([
           oldTail--;
         } else if(oldKeys[oldHead] === newKeys[newHead]) {
           newFrags[newHead] =
-            this.updateFrag(oldFrags[oldHead], values[newHead], parentData);
+            this.updateFrag(oldFrags[oldHead], newHead, values[newHead], parentData);
           oldHead++;
           newHead++;
         } else if(oldKeys[oldTail] === newKeys[newTail]) {
           newFrags[newTail] =
-            this.updateFrag(oldFrags[oldTail], values[newTail], parentData);
+            this.updateFrag(oldFrags[oldTail], newHead, values[newTail], parentData);
           oldTail--;
           newTail--;
         } else if(oldKeys[oldHead] === newKeys[newTail]) {
           newFrags[newTail] =
-            this.updateFrag(oldFrags[oldHead], values[newTail], parentData);
+            this.updateFrag(oldFrags[oldHead], newHead, values[newTail], parentData);
           this.before(oldFrags[oldHead], newFrags[newTail + 1]);
           oldHead++;
           newTail--;
         } else if(oldKeys[oldTail] === newKeys[newHead]) {
           newFrags[newHead] =
-            this.updateFrag(oldFrags[oldTail], values[newHead], parentData);
+            this.updateFrag(oldFrags[oldTail], newHead, values[newHead], parentData);
           this.before(oldFrags[oldTail], oldFrags[oldHead]);
           oldTail--;
           newHead++;
@@ -323,7 +323,7 @@ let specials = new Map([
               frag = this.render(newHead, value, parentData);
               this.keyMap.set(this.key(value, newHead), frag);
             } else {
-              frag = this.updateFrag(frag, value, parentData);
+              frag = this.updateFrag(frag, newHead, value, parentData);
               oldFrags[oldFrags.indexOf(frag)] = null;
             }
             newFrags[newHead] = frag;
