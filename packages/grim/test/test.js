@@ -6,3 +6,4 @@ import './test-event.js';
 import './test-if.js';
 import './test-each.js';
 import './test-directive.js';
+import './test-rehydrate.js';

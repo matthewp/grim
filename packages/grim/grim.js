@@ -40,6 +40,11 @@ function walk(root, cb) {
 let Template = {
   createInstance(data) {
     let frag = document.importNode(this.template.content, true);
+    this.adopt(frag);
+    frag.update(data);
+    return frag;
+  },
+  adopt(frag) {
     let parts = [];
 
     walk(frag, (node, index) => {
@@ -55,7 +60,7 @@ let Template = {
       dirty: valueEnumerable([]),
       update: valueEnumerable(updateFragment)
     });
-    frag.update(data);
+
     return frag;
   }
 };
