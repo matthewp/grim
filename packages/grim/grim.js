@@ -26,7 +26,8 @@ function updateFragment(data = {}) {
 }
 
 function walk(root, cb) {
-  let walker = document.createTreeWalker(root, -1);
+  let doc = root.ownerDocument;
+  let walker = doc.createTreeWalker(root, -1);
   let currentNode = walker.nextNode();
   let index = 0;
 
@@ -39,7 +40,8 @@ function walk(root, cb) {
 
 let Template = {
   createInstance(data) {
-    let frag = document.importNode(this.template.content, true);
+    let doc = this.template.ownerDocument;
+    let frag = doc.importNode(this.template.content, true);
     this.adopt(frag);
     frag.update(data);
     return frag;
@@ -177,15 +179,16 @@ let specials = new Map([
       this.frag.update(data);
     }
     set(value, data) {
+      let doc = this.node.ownerDocument;
       if(!this.nodes) {
         let template = stamp(this.node);
         this.frag = template.createInstance(data);
         this.nodes = Array.from(this.frag.childNodes);
-        this.placeholder = document.createComment(`if(${this.prop})`);
+        this.placeholder = doc.createComment(`if(${this.prop})`);
         this.node.replaceWith(this.placeholder);
       }
       if(value) {
-        let frag = document.createDocumentFragment();
+        let frag = doc.createDocumentFragment();
         for(let node of this.nodes) {
           frag.append(node);
         }
@@ -209,9 +212,10 @@ let specials = new Map([
     }
     set(values, parentData) {
       if(!this.start) {
+        let doc = this.node.ownerDocument;
         this.key = this.args.key ? this.keyKeyed : this.keyNonKeyed;
-        this.start = document.createComment(`each(${this.prop})`);
-        this.end = document.createComment(`end each(${this.prop})`);
+        this.start = doc.createComment(`each(${this.prop})`);
+        this.end = doc.createComment(`end each(${this.prop})`);
         this.node.replaceWith(this.start);
         this.start.after(this.end);
         this.frags = [];
@@ -368,7 +372,8 @@ function addPart(parts, index, item) {
 }
 
 function process(template) {
-  let walker = document.createTreeWalker(template.content, 133, null, false);
+  let doc = template.ownerDocument;
+  let walker = doc.createTreeWalker(template.content, 133, null, false);
   let currentNode = walker.nextNode();
   let index = 0, parts = new Map();
   let callAfters = [];
@@ -439,7 +444,7 @@ function process(template) {
         textExp.lastIndex = 0;
         let matches = node.data.split(textExp);
         if(matches.length > 1) {
-          let frag = document.createDocumentFragment();
+          let frag = doc.createDocumentFragment();
           for(let i = 0; i < matches.length; i++) {
             let text = matches[i];
             if(i % 2 !== 0) {
@@ -447,7 +452,7 @@ function process(template) {
               text = "";
             }
 
-            frag.append(document.createTextNode(text));
+            frag.append(doc.createTextNode(text));
             index++;
           }
           index--;
